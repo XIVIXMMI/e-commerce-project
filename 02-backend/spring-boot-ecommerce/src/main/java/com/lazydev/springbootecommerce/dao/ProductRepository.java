@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByCategoryId(@Param("id") Long id, Pageable pageable);
     /*
-    Behind the screnes, Spring will execute a query similar to this
-        SELECT * FROM product where category_id=?
-
-     And also Spring Data REST automatically exposes endpoint
-     http://localhost:8080/api/products/search/findByCategoryId?id=2
+     SELECT * FROM product where category_id=?
      */
+
+    Page<Product> findByNameContaining(@Param("name") String name, Pageable page);
+    /*
+    SELECT * FROM Product p
+    WHERE
+    p.name  LIKE CONCAT('%', :name, '%')
+     */
+
 }
