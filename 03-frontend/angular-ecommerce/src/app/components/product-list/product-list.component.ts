@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { CartItem } from 'src/app/common/cart-item';
 import { Product } from 'src/app/common/product';
+import { CartService } from 'src/app/services/cart.service';
 import { ProductService } from 'src/app/services/product.service';
 
 @Component({
@@ -9,6 +11,7 @@ import { ProductService } from 'src/app/services/product.service';
   styleUrls: ['./product-list.component.css']
 })
 export class ProductListComponent implements OnInit {
+
 
   products: Product[] = [];
   currentCategoryId: number = 1;
@@ -23,6 +26,7 @@ export class ProductListComponent implements OnInit {
   previousKeyword: string = "";
 
   constructor(private productService: ProductService,
+    private cartService: CartService,
     private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -35,9 +39,9 @@ export class ProductListComponent implements OnInit {
 
     this.searchMode = this.route.snapshot.paramMap.has('keyword');
 
-    if(this.searchMode){
+    if (this.searchMode) {
       this.handleSearchProducts();
-    }else{
+    } else {
       this.handleListProducts();
     }
 
@@ -49,7 +53,7 @@ export class ProductListComponent implements OnInit {
 
     //if we have a dif keyword than previous
     // then set thePageNumber to 1
-    if(this.previousKeyword != theKeyword){
+    if (this.previousKeyword != theKeyword) {
       this.thePageNumber = 1;
     }
 
@@ -59,8 +63,8 @@ export class ProductListComponent implements OnInit {
 
     //search product using keyword
     this.productService.searchProductsPaginate(this.thePageNumber - 1,
-                                              this.thePageSize,
-                                              theKeyword).subscribe(this.processResult());
+      this.thePageSize,
+      theKeyword).subscribe(this.processResult());
   }
 
   handleListProducts() {
@@ -83,7 +87,7 @@ export class ProductListComponent implements OnInit {
 
     // if we have a different category id than previous
     // then set thePageNumber back to 1 
-    if( this.previousCategoryId != this.currentCategoryId){
+    if (this.previousCategoryId != this.currentCategoryId) {
       this.thePageNumber = 1;
     }
 
@@ -93,31 +97,41 @@ export class ProductListComponent implements OnInit {
 
     //now get the products for the given category id
     this.productService.getProductListPaginate(this.thePageNumber - 1, //pagination component pages are 1 based but spring Data REST page are 0 based
-                                              this.thePageSize,
-                                              this.currentCategoryId)
-                                              .subscribe(
-                                                data => {
-                                                  this.products = data._embedded.products;
-                                                  this.thePageNumber = data.page.number + 1;
-                                                  this.thePageSize = data.page.size;
-                                                  this.theTotalElements = data.page.totalElements;
-                                                }
-                                              );
+      this.thePageSize,
+      this.currentCategoryId)
+      .subscribe(
+        data => {
+          //TODO: Use processResult method to alternate this code
+          this.products = data._embedded.products;
+          this.thePageNumber = data.page.number + 1;
+          this.thePageSize = data.page.size;
+          this.theTotalElements = data.page.totalElements;
+        }
+      );
   }
 
   updatePageSize(pageSize: string) {
-      this.thePageSize = +pageSize; //set the page size based on parameter value (convert string to number using "+" symbol)
-      this.thePageNumber = 1;
-      this.listProducts();
-    }
+    this.thePageSize = +pageSize; //set the page size based on parameter value (convert string to number using "+" symbol)
+    this.thePageNumber = 1;
+    this.listProducts();
+  }
 
-  processResult(){
-    return(data: any) => {
+  processResult() {
+    return (data: any) => {
       this.products = data._embedded.products;
       this.thePageNumber = data.page.number + 1;
       this.thePageSize = data.page.size;
       this.theTotalElements = data.page.totalElements;
     }
+  }
+
+  addToCart(theProduct: Product) {
+    console.log(`Adding to cart: ${theProduct.name}, ${theProduct.unitPrice}`);
+
+    const theCartItem = new CartItem(theProduct);
+
+    this.cartService.addToCart(theCartItem);
+
   }
 
 }
