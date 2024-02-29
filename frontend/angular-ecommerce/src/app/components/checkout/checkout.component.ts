@@ -171,22 +171,23 @@ export class CheckoutComponent implements OnInit {
     }
 
     // set up order
-    let order = new Order(this.totalQuantity, this.totalPrice);
-
+    let order = new Order();
+    order.totalPrice = this.totalPrice;
+    order.totalQuantity = this.totalQuantity;
     // get cart items
     const cartItems = this.cartService.cartItems;
 
     // create orderItems from cartItems
     // - long way
     
-    let orderItems: OrderItem[] = [];
-    for (let i=0; i < cartItems.length; i++) {
-      orderItems[i] = new OrderItem(cartItems[i]);
-    }
+    // let orderItems: OrderItem[] = [];
+    // for (let i=0; i < cartItems.length; i++) {
+    //   orderItems[i] = new OrderItem(cartItems[i]);
+    // }
     
 
     // - short way of doing the same thingy
-    //let orderItems: OrderItem[] = cartItems.map(tempCartItem => new OrderItem(tempCartItem.imageUrl!, tempCartItem.unitPrice!, tempCartItem.quantity, tempCartItem.id!));
+    let orderItems: OrderItem[] = cartItems.map(tempCartItem => new OrderItem(tempCartItem));
 
     // set up purchase
     let purchase = new Purchase();
