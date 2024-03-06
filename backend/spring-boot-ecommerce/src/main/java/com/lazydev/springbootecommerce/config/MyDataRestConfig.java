@@ -1,10 +1,7 @@
 package com.lazydev.springbootecommerce.config;
 
-import com.lazydev.springbootecommerce.entity.Country;
-import com.lazydev.springbootecommerce.entity.Product;
-import com.lazydev.springbootecommerce.entity.ProductCategory;
+import com.lazydev.springbootecommerce.entity.*;
 
-import com.lazydev.springbootecommerce.entity.State;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.metamodel.EntityType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +40,8 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
         disableHttpMethods(ProductCategory.class, config, theUnsupportedActions);
         disableHttpMethods(Country.class, config, theUnsupportedActions);
         disableHttpMethods(State.class, config, theUnsupportedActions);
+
+        disableHttpMethods(Order.class, config, theUnsupportedActions);
 
         // call an internal helper method
         exposeIds(config);
