@@ -10,12 +10,15 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
-    Page<Order> findByCustomerEmail(@Param("email") String email, Pageable pageable);
+    Page<Order> findByCustomerEmailOrderByDateCreatedDesc(@Param("email") String email, Pageable pageable);
     /**
      * SELECT * FROM orders
      * LEFT OUTER JOIN customer
      * ON orders.customer_id=customer.id
      * WHERE customer.email=:email
+     * ORDER BY order.date_created DESC
      * http://localhost:8080/api/orders/search/findByCustomerEmail?email=dev.test@gmail.com
      * */
+
+
 }
